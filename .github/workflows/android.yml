@@ -19,7 +19,14 @@
         },
         {
           "name": "Buscar la carpeta movil",
-          "run": "CFG=$(find . -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1)\nif [ -z \"$CFG\" ]; then\n  ZIP=$(find . -iname '*.zip' -not -path './_app/*' | head -1)\n  if [ -n \"$ZIP\" ]; then echo \"Descomprimiendo $ZIP\"; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; CFG=$(find ./_app -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1); fi\nfi\nif [ -z \"$CFG\" ]; then echo \"::error::No encuentro la carpeta movil. Sube al repositorio el archivo fortuna-radiante.zip (tal cual) o las carpetas movil y server.\"; ls -la; exit 1; fi\necho \"MOVIL=$GITHUB_WORKSPACE/$(dirname \"$CFG\")\" >> \"$GITHUB_ENV\"\necho \"Carpeta movil: $(dirname \"$CFG\")\""
+          "run": "ZIP=$(find . -maxdepth 2 -iname '*.zip' | head -1)\nif [ -n \"$ZIP\" ]; then echo \"Usando $ZIP (tiene prioridad sobre las carpetas sueltas)\"; rm -rf _app; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; fi\nCFG=$(find ./_app -path '*/node_modules' -prune -o -name capacitor.config.json -print 2>/dev/null | head -1)\n[ -z \"$CFG\" ] && CFG=$(find . -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1)\nif [ -z \"$CFG\" ]; then echo '::error::No encuentro la carpeta movil. Sube fortuna-radiante.zip al repositorio.'; ls -la; exit 1; fi\necho \"MOVIL=$GITHUB_WORKSPACE/$(dirname \"$CFG\")\" >> \"$GITHUB_ENV\"\necho \"Carpeta movil: $(dirname \"$CFG\")\""
+        },
+        {
+          "name": "Dirección de la web (la app se actualiza sola)",
+          "env": {
+            "W": "${{ vars.FR_WEB_URL }}"
+          },
+          "run": "if [ \"$W\" = \"no\" ]; then W=\"\"; elif [ -z \"$W\" ]; then W=\"https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/\"; fi\necho \"FR_WEB_URL=$W\" >> \"$GITHUB_ENV\"\necho \"La app abrirá: ${W:-la copia incluida dentro del APK}\""
         },
         {
           "uses": "actions/setup-node@v5",

@@ -1,0 +1,70 @@
+# Compila la app de iPhone en un Mac de GitHub y la sube a TestFlight. Necesita cuenta de Apple Developer y 4 secretos (ver tutorial).
+{
+  "name": "iPhone · TestFlight",
+  "on": {
+    "workflow_dispatch": {}
+  },
+  "jobs": {
+    "build": {
+      "runs-on": "macos-15",
+      "steps": [
+        {
+          "uses": "actions/checkout@v5"
+        },
+        {
+          "name": "Buscar la carpeta movil",
+          "run": "ZIP=$(find . -maxdepth 2 -iname '*.zip' | head -1)\nif [ -n \"$ZIP\" ]; then echo \"Usando $ZIP (tiene prioridad sobre las carpetas sueltas)\"; rm -rf _app; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; fi\nCFG=$(find ./_app -path '*/node_modules' -prune -o -name capacitor.config.json -print 2>/dev/null | head -1)\n[ -z \"$CFG\" ] && CFG=$(find . -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1)\nif [ -z \"$CFG\" ]; then echo '::error::No encuentro la carpeta movil. Sube fortuna-radiante.zip al repositorio.'; ls -la; exit 1; fi\necho \"MOVIL=$GITHUB_WORKSPACE/$(dirname \"$CFG\")\" >> \"$GITHUB_ENV\"\necho \"Carpeta movil: $(dirname \"$CFG\")\""
+        },
+        {
+          "name": "Dirección de la web (la app se actualiza sola)",
+          "env": {
+            "W": "${{ vars.FR_WEB_URL }}"
+          },
+          "run": "if [ \"$W\" = \"no\" ]; then W=\"\"; elif [ -z \"$W\" ]; then W=\"https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/\"; fi\necho \"FR_WEB_URL=$W\" >> \"$GITHUB_ENV\"\necho \"La app abrirá: ${W:-la copia incluida dentro del APK}\""
+        },
+        {
+          "name": "Comprobar datos de Apple",
+          "env": {
+            "TEAM": "${{ secrets.APPLE_TEAM_ID }}",
+            "KEY_ID": "${{ secrets.ASC_KEY_ID }}",
+            "ISSUER": "${{ secrets.ASC_ISSUER_ID }}",
+            "KEY_P8": "${{ secrets.ASC_KEY_P8_BASE64 }}"
+          },
+          "run": "for v in TEAM KEY_ID ISSUER KEY_P8; do if [ -z \"${!v}\" ]; then echo \"::error::Falta un secreto de Apple ($v). Revisa el paso B4 del tutorial.\"; exit 1; fi; done"
+        },
+        {
+          "uses": "actions/setup-node@v5",
+          "with": {
+            "node-version": 22
+          }
+        },
+        {
+          "name": "Instalar dependencias",
+          "run": "cd \"$MOVIL\" && npm install"
+        },
+        {
+          "name": "Preparar app (web, iconos, pantalla de inicio)",
+          "run": "cd \"$MOVIL\" && node scripts/prepare.js ios",
+          "env": {
+            "FR_API_URL": "${{ vars.FR_API_URL }}"
+          }
+        },
+        {
+          "name": "Compilar, firmar y subir a TestFlight",
+          "env": {
+            "TEAM": "${{ secrets.APPLE_TEAM_ID }}",
+            "KEY_ID": "${{ secrets.ASC_KEY_ID }}",
+            "ISSUER": "${{ secrets.ASC_ISSUER_ID }}",
+            "KEY_P8": "${{ secrets.ASC_KEY_P8_BASE64 }}"
+          },
+          "run": "cd \"$MOVIL\"\nKEY=\"$RUNNER_TEMP/AuthKey.p8\"; echo \"$KEY_P8\" | base64 --decode > \"$KEY\"\nAUTH=(-allowProvisioningUpdates -authenticationKeyPath \"$KEY\" -authenticationKeyID \"$KEY_ID\" -authenticationKeyIssuerID \"$ISSUER\")\nif [ -d ios/App/App.xcworkspace ]; then SRC=(-workspace ios/App/App.xcworkspace); else SRC=(-project ios/App/App.xcodeproj); fi\nxcodebuild \"${SRC[@]}\" -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath \"$RUNNER_TEMP/App.xcarchive\" \"${AUTH[@]}\" DEVELOPMENT_TEAM=\"$TEAM\" CODE_SIGN_STYLE=Automatic PRODUCT_BUNDLE_IDENTIFIER=com.fortunaradiante.app CURRENT_PROJECT_VERSION=\"$GITHUB_RUN_NUMBER\" archive\n/usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' -c 'Add :destination string upload' -c \"Add :teamID string $TEAM\" -c 'Add :signingStyle string automatic' \"$RUNNER_TEMP/Export.plist\"\nxcodebuild -exportArchive -archivePath \"$RUNNER_TEMP/App.xcarchive\" -exportOptionsPlist \"$RUNNER_TEMP/Export.plist\" -exportPath \"$RUNNER_TEMP/out\" \"${AUTH[@]}\"\necho '::notice::Subida a App Store Connect. En unos minutos aparecerá en TestFlight.'"
+        },
+        {
+          "name": "Si algo falló",
+          "if": "failure()",
+          "run": "echo '::error::Algo ha fallado. Abre el paso con la X roja y copia sus últimas 30 líneas para enviárselas a Claude.'"
+        }
+      ]
+    }
+  }
+}
