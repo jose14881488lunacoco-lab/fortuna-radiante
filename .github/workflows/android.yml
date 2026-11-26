@@ -15,11 +15,11 @@
       "runs-on": "ubuntu-latest",
       "steps": [
         {
-          "uses": "actions/checkout@v4"
+          "uses": "actions/checkout@v5"
         },
         {
           "name": "Buscar la carpeta movil",
-          "run": "CFG=$(find . -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1)\nif [ -z \"$CFG\" ]; then echo \"::error::No encuentro la carpeta 'movil'. Sube también las carpetas movil y server.\"; exit 1; fi\necho \"MOVIL=$GITHUB_WORKSPACE/$(dirname \"$CFG\")\" >> \"$GITHUB_ENV\"\necho \"Carpeta movil: $(dirname \"$CFG\")\"\n"
+          "run": "CFG=$(find . -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1)\nif [ -z \"$CFG\" ]; then\n  ZIP=$(find . -iname '*.zip' -not -path './_app/*' | head -1)\n  if [ -n \"$ZIP\" ]; then echo \"Descomprimiendo $ZIP\"; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; CFG=$(find ./_app -path '*/node_modules' -prune -o -name capacitor.config.json -print | head -1); fi\nfi\nif [ -z \"$CFG\" ]; then echo \"::error::No encuentro la carpeta movil. Sube al repositorio el archivo fortuna-radiante.zip (tal cual) o las carpetas movil y server.\"; ls -la; exit 1; fi\necho \"MOVIL=$GITHUB_WORKSPACE/$(dirname \"$CFG\")\" >> \"$GITHUB_ENV\"\necho \"Carpeta movil: $(dirname \"$CFG\")\""
         },
         {
           "uses": "actions/setup-node@v4",
