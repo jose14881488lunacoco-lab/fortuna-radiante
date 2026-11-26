@@ -1,0 +1,60 @@
+# Publica la app web gratis con HTTPS para instalarla en iPhone desde Safari. Formato JSON: a prueba de pegado.
+{
+  "name": "iPhone · app web (GitHub Pages)",
+  "on": {
+    "workflow_dispatch": {},
+    "push": {
+      "branches": [
+        "main",
+        "master"
+      ]
+    }
+  },
+  "permissions": {
+    "contents": "read",
+    "pages": "write",
+    "id-token": "write"
+  },
+  "concurrency": {
+    "group": "pages",
+    "cancel-in-progress": true
+  },
+  "jobs": {
+    "deploy": {
+      "runs-on": "ubuntu-latest",
+      "environment": {
+        "name": "github-pages",
+        "url": "${{ steps.publicar.outputs.page_url }}"
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@v5"
+        },
+        {
+          "name": "Preparar la app web",
+          "run": "WEB=$(find . -path '*/node_modules' -prune -o -path '*/server/public/index.html' -print | head -1)\nif [ -z \"$WEB\" ]; then\n  ZIP=$(find . -iname '*.zip' -not -path './_app/*' | head -1)\n  if [ -n \"$ZIP\" ]; then echo \"Descomprimiendo $ZIP\"; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; WEB=$(find ./_app -path '*/server/public/index.html' -print | head -1); fi\nfi\nif [ -z \"$WEB\" ]; then echo '::error::No encuentro la app (server/public). Sube fortuna-radiante.zip al repositorio.'; exit 1; fi\nmkdir -p _site && cp -r \"$(dirname \"$WEB\")\"/. _site/\nAPI=\"${FR_API_URL%/}\"\necho \"window.FR_API = \\\"$API\\\";\" > _site/config.js\ntouch _site/.nojekyll\necho \"App web lista\"",
+          "env": {
+            "FR_API_URL": "${{ vars.FR_API_URL }}"
+          }
+        },
+        {
+          "uses": "actions/configure-pages@v5"
+        },
+        {
+          "uses": "actions/upload-pages-artifact@v3",
+          "with": {
+            "path": "_site"
+          }
+        },
+        {
+          "id": "publicar",
+          "uses": "actions/deploy-pages@v4"
+        },
+        {
+          "name": "Dirección de tu app",
+          "run": "echo \"::notice::Tu app está en ${{ steps.publicar.outputs.page_url }} — ábrela en Safari y pulsa Compartir → Añadir a pantalla de inicio\""
+        }
+      ]
+    }
+  }
+}
