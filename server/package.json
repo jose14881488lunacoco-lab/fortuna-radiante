@@ -1,0 +1,13 @@
+{
+  "name": "fortuna-radiante",
+  "version": "1.0.0",
+  "description": "Fortuna Radiante: gráficos del oro, IA Fortunaty, liga de trading, chat y mentorías",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "metaapi.cloud-sdk": "^29.3.3"
+  }
+}

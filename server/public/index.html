@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0806">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fortuna">
+<title>Fortuna Radiante</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/logo-96.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@600;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".4" stop-color="#f5c84c"/><stop offset=".75" stop-color="#d9961b"/><stop offset="1" stop-color="#a8670a"/></linearGradient>
+    <symbol id="emblem" viewBox="0 0 64 64">
+      <g fill="url(#gg)"><path d="M32 2l3 14h-6zM32 62l-3-14h6zM2 32l14-3v6zM62 32l-14 3v-6zM10.8 10.8l12 7.8-4.2 4.2zM53.2 53.2l-12-7.8 4.2-4.2zM53.2 10.8l-7.8 12-4.2-4.2zM10.8 53.2l7.8-12 4.2 4.2z"/><circle cx="32" cy="32" r="14"/></g>
+      <path d="M32 22.5l2.4 7.1 7.1 2.4-7.1 2.4L32 41.5l-2.4-7.1-7.1-2.4 7.1-2.4z" fill="#073d2f"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="splash" id="splash" aria-hidden="true"><span>CARGANDO</span></div>
+<div id="app">
+  <header class="top">
+    <a class="logo" href="#inicio" aria-label="Fortuna Radiante, inicio"><img src="icons/logo-96.png" alt=""><span class="wm"><b>FORTUNA</b><small>RADIANTE</small></span></a>
+    <span class="mode" id="mode">Demo</span>
+    <button class="me" id="mebtn" data-go="cuenta" aria-label="Mi cuenta">?</button>
+  </header>
+  <div class="ticker" id="ticker" aria-label="Precios en tiempo real"><div class="tk-track" id="tk-track"></div></div>
+
+  <main id="main">
+    <!-- INICIO -->
+    <section class="view" id="v-inicio" hidden>
+      <div class="hero" id="hero">
+        <svg class="veins" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#e0b440" stroke-width=".8"><path d="M0 40 C60 60 90 20 150 50 S260 30 300 80 360 70 400 60"/><path d="M40 300 C70 230 130 250 160 190 S230 150 250 90 320 60 400 10"/><path d="M200 300 C220 260 280 270 300 220 S360 200 400 170"/><path d="M0 180 C40 170 60 200 110 190 S170 230 210 220"/></g></svg><img class="hero-logo" src="icons/logo-192.png" alt="">
+        <div class="hero-in">
+          <p class="eyebrow">Oro · XAUUSD</p>
+          <div class="big" id="h-price">–</div>
+          <div class="h-meta"><span class="pill" id="h-chg"></span><span id="h-range"></span></div>
+          <svg class="spark" id="h-spark" preserveAspectRatio="none"></svg>
+          <div class="h-btns"><button class="btn gold" data-chart="XAUUSD">Abrir gráfico</button><button class="btn glass" data-ask="Hazme un análisis técnico completo del XAUUSD ahora mismo."><img src="icons/logo-96.png" alt="">Fortunaty</button></div>
+        </div>
+      </div>
+      <div class="pad">
+        <h2 class="sec">Mercados</h2>
+        <div class="markets" id="markets"></div>
+        <div class="card pulse">
+          <div class="ph"><span class="ft-av sm"><img src="icons/logo-96.png" alt=""></span><div><b>Pulso de Fortunaty</b><small id="pulse-src">Lectura automática del oro</small></div></div>
+          <ul class="kv" id="pulse"></ul>
+          <button class="btn ghost full" data-ask="Dame las noticias más importantes del oro hoy y cómo pueden afectar al precio.">Noticias del oro con Fortunaty</button>
+        </div>
+        <h2 class="sec">Sesiones de mercado</h2>
+        <div class="sess-row" id="sess-mini"></div>
+        <div class="two-c">
+          <a class="card mini" href="#comunidad" data-tab="liga"><small>Liga de trading</small><b id="mini-liga">–</b><span class="sub" id="mini-liga2"></span></a>
+          <a class="card mini" href="#mentorias"><small>Próxima mentoría</small><b id="mini-ment">–</b><span class="sub" id="mini-ment2"></span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRÁFICO -->
+    <section class="view chartv" id="v-grafico" hidden>
+      <div class="c-top">
+        <div class="lay" id="c-lay" role="group" aria-label="Número de gráficos">
+          <button data-n="1" aria-label="1 gráfico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></button>
+          <button data-n="2" aria-label="2 gráficos"><svg viewBox="0 0 24 24"><path d="M3 3h18v8H3zm0 10h18v8H3z"/></svg></button>
+          <button data-n="3" aria-label="3 gráficos"><svg viewBox="0 0 24 24"><path d="M3 3h18v5H3zm0 6.5h18v5H3zM3 16h18v5H3z"/></svg></button>
+        </div>
+        <div class="c-acts">
+          <button class="ib" id="c-type" aria-label="Tipo de gráfico"><svg viewBox="0 0 24 24"><path d="M7 3v3H5v10h2v5h2v-5h2V6H9V3zm8 4v3h-2v7h2v4h2v-4h2v-7h-2V7z"/></svg></button>
+          <button class="ib" id="c-ind" aria-label="Indicadores"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 4 7-9 2 1.5-8.8 11.4-4-4L4.6 18.3z"/></svg><span>Indicadores</span></button>
+          <button class="ib" id="c-full" aria-label="Pantalla completa"><svg viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg></button>
+        </div>
+      </div>
+      <div class="c-panes" id="c-panes"></div>
+      <div class="tools" id="tools" role="toolbar" aria-label="Herramientas de dibujo"></div>
+    </section>
+
+    <!-- FORTUNATY -->
+    <section class="view ftv" id="v-fortunaty" hidden>
+      <div class="ft-msgs" id="ft-msgs"></div>
+      <div class="ft-chips" id="ft-chips"></div>
+      <form class="ft-form" id="ft-form"><input id="ft-in" placeholder="Pregunta a Fortunaty…" autocomplete="off" maxlength="600" aria-label="Pregunta a Fortunaty"><button class="send" aria-label="Enviar"><svg viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg></button></form>
+    </section>
+
+    <!-- COMUNIDAD -->
+    <section class="view" id="v-comunidad" hidden>
+      <div class="pad">
+        <div class="segm" id="com-seg"><button data-c="chat">Chat</button><button data-c="liga">Liga</button></div>
+        <div id="com-chat">
+          <div class="chips" id="chans"></div>
+          <div class="msgs" id="msgs" aria-live="polite"></div>
+          <form class="composer" id="send"><input id="msg" maxlength="500" placeholder="Escribe un mensaje" autocomplete="off" aria-label="Mensaje"><button class="btn gold">Enviar</button></form>
+          <p class="fine" id="chat-note"></p>
+        </div>
+        <div id="com-liga" hidden>
+          <p class="sub">Temporada de invierno · termina en <b id="clock"></b></p>
+          <div class="podium" id="podium"></div>
+          <div class="card"><h3>Carrera del top 5</h3><div class="fig"><svg id="race"></svg></div><div class="legend" id="legend"></div></div>
+          <div class="lbar"><input id="q" type="search" placeholder="Buscar trader" aria-label="Buscar trader"><select id="pf" aria-label="Plataforma"><option value="">MT4 y MT5</option><option>MT4</option><option>MT5</option></select></div>
+          <div class="rank" id="rows"></div>
+          <button class="btn gold full" data-go="cuenta" id="cta-link">Vincular mi cuenta MetaTrader</button>
+          <p class="fine">Puntos = 10 × (Ganancia % − 0,5 × Drawdown máx. %). Mínimo 10 operaciones para clasificar.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÁS -->
+    <section class="view" id="v-mas" hidden>
+      <div class="pad">
+        <h1 class="title">Más</h1>
+        <nav class="menu">
+          <a href="#mentorias"><i><svg viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2V17c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.8l-7 3.8z"/></svg></i><span><b>Mentorías</b><small>Sesiones en directo y ruta del trader</small></span></a>
+          <a href="#utiles"><i><svg viewBox="0 0 24 24"><path d="M5 2h14v20H5zm2 2v5h10V4zm0 7v2h2v-2zm4 0v2h2v-2zm4 0v7h2v-7zm-8 4v2h2v-2zm4 0v2h2v-2z"/></svg></i><span><b>Calculadora de lotaje</b><small>Riesgo, lotes y take profit para XAUUSD</small></span></a>
+          <a href="#diario"><i><svg viewBox="0 0 24 24"><path d="M6 2h13v18H7a1 1 0 0 0 0 2h12v-2h1v4H7a3 3 0 0 1-3-3V4a2 2 0 0 1 2-2zm3 4v2h7V6zm0 4v2h5v-2z"/></svg></i><span><b>Diario de operaciones</b><small>Apunta y revisa tus trades</small></span></a>
+          <a href="#cuenta"><i><svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 9c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg></i><span><b>Mi cuenta</b><small>Perfil y cuenta MetaTrader</small></span></a>
+          <a href="#instalar"><i><svg viewBox="0 0 24 24"><path d="M7 1h10a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zm0 3v15h10V4zm4 1h2v7l2-2 1.4 1.4L12 15.8l-4.4-4.4L9 10l2 2z"/></svg></i><span><b>Instalar la app</b><small>Añádela a la pantalla de inicio</small></span></a>
+        </nav>
+        <p class="fine">Fortuna Radiante ofrece información y formación. Nada de lo que muestra es asesoramiento financiero; operar con apalancamiento conlleva un alto riesgo de pérdida.</p>
+      </div>
+    </section>
+
+    <section class="view" id="v-mentorias" hidden><div class="pad">
+      <a class="back" href="#mas">‹ Más</a><h1 class="title">Mentorías</h1>
+      <div class="next" id="next"></div>
+      <h2 class="sec">Próximas sesiones</h2><div class="sessions" id="sessions"></div>
+      <h2 class="sec">Ruta del trader <small id="prog"></small></h2><div id="course"></div>
+      <h2 class="sec">Mentores</h2><div class="mentors" id="mentors"></div>
+      <p class="fine">Mentores y sesiones de ejemplo: se editan en <code>data/mentorias.json</code> del servidor.</p>
+    </div></section>
+
+    <section class="view" id="v-utiles" hidden><div class="pad">
+      <a class="back" href="#mas">‹ Más</a><h1 class="title">Calculadora de lotaje</h1>
+      <div class="card">
+        <div class="grid2">
+          <label>Capital ($)<input id="c-bal" inputmode="decimal" value="10000"></label>
+          <label>Riesgo (%)<input id="c-risk" inputmode="decimal" value="1"></label>
+          <label>Entrada<input id="c-in" inputmode="decimal"></label>
+          <label>Stop loss<input id="c-sl" inputmode="decimal"></label>
+          <label>Ratio B/R<input id="c-rr" inputmode="decimal" value="2"></label>
+          <button class="btn ghost" id="c-now" type="button">Usar precio actual</button>
+        </div>
+        <div class="result" id="c-out"></div>
+        <p class="fine">1 lote de XAUUSD = 100 onzas: cada 1 $ de movimiento vale 100 $ por lote. Revisa el contrato de tu bróker.</p>
+      </div>
+      <h2 class="sec">Sesiones de mercado</h2><div class="card" id="sess"></div>
+    </div></section>
+
+    <section class="view" id="v-diario" hidden><div class="pad">
+      <a class="back" href="#mas">‹ Más</a><h1 class="title">Diario de operaciones</h1>
+      <form class="card jform" id="j-f">
+        <div class="segm sm" id="j-dir"><button type="button" data-d="1" aria-pressed="true">Compra</button><button type="button" data-d="-1" aria-pressed="false">Venta</button></div>
+        <div class="grid3"><input id="j-in" inputmode="decimal" placeholder="Entrada" aria-label="Entrada"><input id="j-out" inputmode="decimal" placeholder="Salida" aria-label="Salida"><input id="j-lots" inputmode="decimal" placeholder="Lotes" aria-label="Lotes"></div>
+        <input id="j-note" placeholder="Nota (opcional)" aria-label="Nota"><button class="btn gold full">Añadir operación</button>
+      </form>
+      <div class="jsum" id="j-sum"></div><div id="j-rows"></div>
+    </div></section>
+
+    <section class="view" id="v-cuenta" hidden><div class="pad" id="acct"></div></section>
+
+    <section class="view" id="v-instalar" hidden><div class="pad">
+      <a class="back" href="#mas">‹ Más</a><h1 class="title">Instala Fortuna Radiante</h1>
+      <div class="card install"><img class="emb" src="icons/logo-512.png" alt="Logo de Fortuna Radiante"><p>Tenla en tu pantalla de inicio como una app más: abre a pantalla completa, sin barra del navegador.</p><button class="btn gold full" id="inst-btn" hidden>Instalar ahora</button></div>
+      <div class="card"><h3>iPhone (Safari)</h3><ol class="steps"><li>Pulsa el botón <b>Compartir</b>.</li><li>Elige <b>Añadir a pantalla de inicio</b>.</li><li>Confirma con <b>Añadir</b>.</li></ol></div>
+      <div class="card"><h3>Android (Chrome)</h3><ol class="steps"><li>Abre el menú <b>⋮</b>.</li><li>Pulsa <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</li></ol></div>
+      <p class="fine">La instalación funciona cuando la app está publicada en tu propio dominio con HTTPS.</p>
+    </div></section>
+  </main>
+
+  <nav class="tabbar" id="tabbar" aria-label="Secciones">
+    <a href="#inicio" data-t="inicio"><svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg><span>Inicio</span></a>
+    <a href="#grafico" data-t="grafico"><svg viewBox="0 0 24 24"><path d="M7 3v3H5v10h2v5h2v-5h2V6H9V3zm8 4v3h-2v7h2v4h2v-4h2v-7h-2V7z"/></svg><span>Gráfico</span></a>
+    <a href="#fortunaty" data-t="fortunaty" class="ftab"><span class="orb"><img src="icons/logo-96.png" alt=""></span><span>Fortunaty</span></a>
+    <a href="#comunidad" data-t="comunidad"><svg viewBox="0 0 24 24"><path d="M4 4h16v11H8l-4 4zM7 8v2h10V8zm0 3v2h7v-2z"/></svg><span>Comunidad</span></a>
+    <a href="#mas" data-t="mas"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg><span>Más</span></a>
+  </nav>
+</div>
+<div class="sheet-bg" id="sheet-bg" hidden></div>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-t"><div class="grab"></div><h3 id="sheet-t"></h3><div id="sheet-c"></div></div>
+<div class="toasts" id="toasts" role="status"></div>
+<script src="chart.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
