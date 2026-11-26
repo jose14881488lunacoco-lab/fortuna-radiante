@@ -47,13 +47,17 @@
         },
         {
           "name": "Instalar dependencias",
-          "run": "cd \"$MOVIL\" && npm install"
+          "env": {
+            "GS": "${{ secrets.GOOGLE_SERVICES_JSON }}"
+          },
+          "run": "cd \"$MOVIL\"\nif [ -z \"$GS\" ]; then node -e \"const f='package.json',p=require('./'+f);delete p.dependencies['@capacitor/push-notifications'];require('fs').writeFileSync(f,JSON.stringify(p,null,2))\"; echo 'Sin GOOGLE_SERVICES_JSON: APK sin notificaciones'; fi\nnpm install"
         },
         {
           "name": "Preparar app (web, iconos, pantalla de inicio)",
           "run": "cd \"$MOVIL\" && node scripts/prepare.js android",
           "env": {
-            "FR_API_URL": "${{ vars.FR_API_URL }}"
+            "FR_API_URL": "${{ vars.FR_API_URL }}",
+            "GOOGLE_SERVICES_JSON": "${{ secrets.GOOGLE_SERVICES_JSON }}"
           }
         },
         {
