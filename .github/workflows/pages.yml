@@ -32,7 +32,7 @@
         },
         {
           "name": "Preparar la app web",
-          "run": "WEB=$(find . -path '*/node_modules' -prune -o -path '*/server/public/index.html' -print | head -1)\nif [ -z \"$WEB\" ]; then\n  ZIP=$(find . -iname '*.zip' -not -path './_app/*' | head -1)\n  if [ -n \"$ZIP\" ]; then echo \"Descomprimiendo $ZIP\"; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; WEB=$(find ./_app -path '*/server/public/index.html' -print | head -1); fi\nfi\nif [ -z \"$WEB\" ]; then echo '::error::No encuentro la app (server/public). Sube fortuna-radiante.zip al repositorio.'; exit 1; fi\nmkdir -p _site && cp -r \"$(dirname \"$WEB\")\"/. _site/\nAPI=\"${FR_API_URL%/}\"\necho \"window.FR_API = \\\"$API\\\";\" > _site/config.js\ntouch _site/.nojekyll\necho \"App web lista\"",
+          "run": "WEB=$(find . -path '*/node_modules' -prune -o -path '*/server/public/index.html' -print | head -1)\nif [ -z \"$WEB\" ]; then\n  ZIP=$(find . -iname '*.zip' -not -path './_app/*' | head -1)\n  if [ -n \"$ZIP\" ]; then echo \"Descomprimiendo $ZIP\"; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; WEB=$(find ./_app -path '*/server/public/index.html' -print | head -1); fi\nfi\nif [ -z \"$WEB\" ]; then echo '::error::No encuentro la app (server/public). Sube fortuna-radiante.zip al repositorio.'; exit 1; fi\nmkdir -p _site && cp -r \"$(dirname \"$WEB\")\"/. _site/\nAPI=\"${FR_API_URL%/}\"\necho \"window.FR_API = \\\"$API\\\";\" > _site/config.js\necho \"App web lista\"",
           "env": {
             "FR_API_URL": "${{ vars.FR_API_URL }}"
           }
@@ -41,7 +41,7 @@
           "uses": "actions/configure-pages@v5"
         },
         {
-          "uses": "actions/upload-pages-artifact@v3",
+          "uses": "actions/upload-pages-artifact@v4",
           "with": {
             "path": "_site"
           }
