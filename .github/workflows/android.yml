@@ -86,11 +86,26 @@
           }
         },
         {
+          "name": "Publicar enlace de descarga (Releases)",
+          "uses": "softprops/action-gh-release@v2",
+          "with": {
+            "tag_name": "apk",
+            "name": "Fortuna Radiante · Android",
+            "body": "Descarga directa del instalador de Android. Se actualiza solo cada vez que se fabrica un APK nuevo.",
+            "files": "salida/FortunaRadiante.apk",
+            "make_latest": "true",
+            "overwrite_files": true
+          }
+        },
+        {
           "name": "Si algo falló",
           "if": "failure()",
           "run": "echo '::error::Algo ha fallado. Abre el paso marcado con una X roja (arriba) y copia sus últimas 30 líneas para enviárselas a Claude.'"
         }
-      ]
+      ],
+      "permissions": {
+        "contents": "write"
+      }
     }
   }
 }
