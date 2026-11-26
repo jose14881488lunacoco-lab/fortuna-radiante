@@ -32,9 +32,11 @@
         },
         {
           "name": "Preparar la app web",
-          "run": "WEB=$(find . -path '*/node_modules' -prune -o -path '*/server/public/index.html' -print | head -1)\nif [ -z \"$WEB\" ]; then\n  ZIP=$(find . -iname '*.zip' -not -path './_app/*' | head -1)\n  if [ -n \"$ZIP\" ]; then echo \"Descomprimiendo $ZIP\"; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; WEB=$(find ./_app -path '*/server/public/index.html' -print | head -1); fi\nfi\nif [ -z \"$WEB\" ]; then echo '::error::No encuentro la app (server/public). Sube fortuna-radiante.zip al repositorio.'; exit 1; fi\nmkdir -p _site && cp -r \"$(dirname \"$WEB\")\"/. _site/\nAPI=\"${FR_API_URL%/}\"\necho \"window.FR_API = \\\"$API\\\";\" > _site/config.js\necho \"App web lista\"",
+          "run": "ZIP=$(find . -maxdepth 2 -iname '*.zip' | head -1)\nif [ -n \"$ZIP\" ]; then echo \"Usando $ZIP (tiene prioridad sobre las carpetas sueltas)\"; rm -rf _app; mkdir -p _app && unzip -q -o \"$ZIP\" -d _app; fi\nWEB=$(find ./_app -path '*/server/public/index.html' -print 2>/dev/null | head -1)\n[ -z \"$WEB\" ] && WEB=$(find . -path '*/node_modules' -prune -o -path '*/server/public/index.html' -print | head -1)\nif [ -z \"$WEB\" ]; then echo '::error::No encuentro la app. Sube fortuna-radiante.zip al repositorio.'; exit 1; fi\nmkdir -p _site && cp -r \"$(dirname \"$WEB\")\"/. _site/\nAPI=\"${FR_API_URL%/}\"\nprintf 'window.FR_API = \"%s\";\\nwindow.FR_SUPABASE_URL = \"%s\";\\nwindow.FR_SUPABASE_KEY = \"%s\";\\n' \"$API\" \"$SB_URL\" \"$SB_KEY\" > _site/config.js\necho \"App web lista desde $(dirname \"$WEB\")\"",
           "env": {
-            "FR_API_URL": "${{ vars.FR_API_URL }}"
+            "FR_API_URL": "${{ vars.FR_API_URL }}",
+            "SB_URL": "${{ vars.FR_SUPABASE_URL }}",
+            "SB_KEY": "${{ vars.FR_SUPABASE_KEY }}"
           }
         },
         {
